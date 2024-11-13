@@ -3,7 +3,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
-import 'package:flutter/foundation.dart';
 
 class SupabaseService {
   static final supabase = Supabase.instance.client;
@@ -153,7 +152,7 @@ class SupabaseService {
     } catch (e) {
       rethrow;
     }
-}
+  }
 
   static Future<Map<String, dynamic>?> fetchUserProfile() async {
     try {
@@ -162,7 +161,7 @@ class SupabaseService {
 
       final response = await supabase
           .from('profiles')
-          .select('name, zomato_id, upi_id, phone') // Fetch all required fields
+          .select('name, zomato_id, upi_id, phone, bann') // Revert to original fields
           .eq('id', user.id)
           .single();
 
@@ -406,7 +405,7 @@ class SupabaseService {
     try {
       final response = await supabase
           .from('images')
-          .select('price, created_at, status')
+          .select('price, created_at, status, reason')
           .eq('user_id', user.id)
           .order('created_at', ascending: true); // Order by creation date
 

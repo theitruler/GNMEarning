@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/services.dart';
+import 'bannsheet.dart';
 import '../login/login.dart';
 import 'logic.dart';
 import '../theme/colors.dart';
@@ -37,6 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
       setTotalEarnings: (value) => setState(() => _totalEarnings = value),
     );
     _initializeData();
+    _checkUserProfile();
   }
 
   Future<void> _initializeData() async {
@@ -94,10 +96,15 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> uploadImage() async {
-    // Call your upload function here
     await SupabaseService.takePictureAndUpload();
-    // After upload, refresh today's stats
     await fetchTodayStats();
+  }
+
+  void _checkUserProfile() async {
+    final profile = await SupabaseService.fetchUserProfile();
+    if (profile != null && profile['bann'] == true) {
+      showBannedBottomSheet(context);
+    }
   }
 
   @override

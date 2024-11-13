@@ -120,29 +120,51 @@ class _EarningDetailScreenState extends State<EarningDetailScreen> {
                         horizontal: 16,
                         vertical: 8,
                       ),
-                      child: ListTile(
-                        title: Text('₹$price'),
-                        subtitle: Text('Time: $formattedTime'),
-                        trailing: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: status == 'pending' 
-                                ? Colors.orange 
-                                : status == 'approved'
-                                    ? Colors.green
-                                    : status == 'rejected'
-                                        ? Colors.red
-                                        : Colors.red,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            status.toUpperCase(),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 12,
+                      child: GestureDetector(
+                        onTap: () {
+                          if (status == 'rejected') {
+                            final reason = image['reason'] ?? 'No reason provided';
+                            showModalBottomSheet(
+                              context: context,
+                              isScrollControlled: true,
+                              builder: (BuildContext context) {
+                                return Container(
+                                  width: MediaQuery.of(context).size.width,
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Text(
+                                    reason,
+                                    style: TextStyle(fontSize: 18),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                        },
+                        child: ListTile(
+                          title: Text('₹$price'),
+                          subtitle: Text('Time: $formattedTime'),
+                          trailing: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: status == 'pending' 
+                                  ? Colors.orange 
+                                  : status == 'approved'
+                                      ? Colors.green
+                                      : status == 'rejected'
+                                          ? Colors.red
+                                          : Colors.red,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              status.toUpperCase(),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
                             ),
                           ),
                         ),
