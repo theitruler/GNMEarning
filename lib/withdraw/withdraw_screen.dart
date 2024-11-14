@@ -136,7 +136,7 @@ class _WithdrawScreenState extends State<WithdrawScreen> {
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: ElevatedButton(
-            onPressed: _showWithdrawBottomSheet, // Show the bottom sheet when pressed
+            onPressed: _withdrawableBalance >= 100 ? _showWithdrawBottomSheet : null, // Disable button if balance is less than 100
             child: const Text('Withdraw Amount'),
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 60), // Increased button height

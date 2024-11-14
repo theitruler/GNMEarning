@@ -12,6 +12,7 @@ import 'homedrawer.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
 import 'bannsheet.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -117,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> fetchLatestVersion() async {
-    final response = await http.get(Uri.parse('https://api.github.com/repos/theitruler/GNMEarning/releases/latest'));
+    final response = await http.get(Uri.parse(dotenv.env['GITHUB_URL']!));
 
     if (response.statusCode == 200) {
       final data = json.decode(response.body);
