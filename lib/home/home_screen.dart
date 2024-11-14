@@ -1,6 +1,7 @@
+import 'dart:convert'; // Add this import for JSON decoding
+import 'package:http/http.dart' as http; // Add this import for HTTP requests
 import 'package:flutter/material.dart';
 import '../services/services.dart';
-import 'bannsheet.dart';
 import '../login/login.dart';
 import 'logic.dart';
 import '../theme/colors.dart';
@@ -8,6 +9,9 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../profile/profile_page.dart';
 import '../withdraw/withdraw_screen.dart';
 import 'homedrawer.dart';
+import 'package:package_info_plus/package_info_plus.dart';
+import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
+import 'bannsheet.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +30,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String? zomatoId;
   String? userName;
   double _withdrawableBalance = 0.0;
+  String? newVersion;
+  String? currentVersion;
+  String? appUrl;
 
   @override
   void initState() {
@@ -39,6 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
     _initializeData();
     _checkUserProfile();
+    fetchLatestVersion();
+    currentVersionGet();
   }
 
   Future<void> _initializeData() async {
@@ -107,8 +116,35 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+  Future<void> fetchLatestVersion() async {
+    final response = await http.get(Uri.parse('https://api.github.com/repos/theitruler/GNMEarning/releases/latest'));
+
+    if (response.statusCode == 200) {
+      final data = json.decode(response.body);
+      setState(() {
+        newVersion = data['tag_name'];
+        appUrl = data['assets'][0]['browser_download_url'];
+      });
+    } else {
+      throw Exception('Failed to load latest version');
+    }
+  }
+
+  Future<void> currentVersionGet() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      currentVersion = packageInfo.version;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    bool isUpdateAvailable = currentVersion != newVersion;
+
+    return isUpdateAvailable ? _buildUpdateScreen() : _buildMainScreen();
+  }
+
+  Scaffold _buildMainScreen() {
     return Scaffold(
       backgroundColor: backgroundColor,
       appBar: AppBar(
@@ -377,6 +413,48 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
       drawer: const HomeDrawer(),
+    );
+  }
+
+  Scaffold _buildUpdateScreen() {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Update Available'),
+      ),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                'A new version ($newVersion) is available!',
+                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Your current version is $currentVersion.',
+                style: const TextStyle(fontSize: 16),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () async {
+                  if (appUrl != null) {
+                    if (await canLaunch(appUrl!)) {
+                      await launch(appUrl!);
+                    } else {
+                      throw 'Could not launch $appUrl';
+                    }
+                  }
+                },
+                child: const Text('Update Now'),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 } 
