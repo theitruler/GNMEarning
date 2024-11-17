@@ -99,7 +99,7 @@ class SupabaseService {
       await supabase.from('images').insert({
         'user_id': user.id,
         'image_url': fileUrl,
-        'price': 7,
+        'price': 25,
         'latitude': position.latitude,
         'longitude': position.longitude,
         'created_at': DateTime.now().toIso8601String(),
