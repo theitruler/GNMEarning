@@ -3,6 +3,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/services.dart';
 import '../home/home_screen.dart';
 import '../theme/colors.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -147,6 +148,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               color: accentColor,
                             ),
                           ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                TextButton(
+                  onPressed: () async {
+                    const url = 'https://docs.google.com/forms/d/e/1FAIpQLSejBigg6_FyxhZtep-Is3sW3Zgz3uP9nrwbNnI_ap_iiS4Seg/viewform';
+                    launch(url);
+                  },
+                  child: const Text(
+                    'Register',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: primaryColor,
+                    ),
                   ),
                 ),
               ],
