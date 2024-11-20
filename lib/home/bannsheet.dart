@@ -15,10 +15,23 @@ void showBannedBottomSheet(BuildContext context) {
           child: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                'Your account has been banned. Please contact support for more information.',
-                style: TextStyle(fontSize: 16),
-                textAlign: TextAlign.center,
+              Column(
+                children: [
+                  const Text(
+                    'Server Under Maintenance',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    'We are currently performing scheduled maintenance. Please try again later.',
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
               ),
               SizedBox(height: 20),
             ],
