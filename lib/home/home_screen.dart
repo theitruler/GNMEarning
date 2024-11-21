@@ -510,13 +510,7 @@ class _HomeScreenState extends State<HomeScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () async {
-                  if (appUrl != null) {
-                    if (await canLaunch(appUrl!)) {
-                      await launch(appUrl!);
-                    } else {
-                      throw 'Could not launch $appUrl';
-                    }
-                  }
+                  launch(appUrl!);
                 },
                 child: const Text('Update Now'),
               ),
