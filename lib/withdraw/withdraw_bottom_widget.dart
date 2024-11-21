@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../services/services.dart'; // Import the SupabaseService
+import '../services/services.dart';
 
 class WithdrawBottomWidget extends StatefulWidget {
-  final double withdrawableBalance; // Pass the withdrawable balance
+  final double withdrawableBalance;
   const WithdrawBottomWidget({super.key, required this.withdrawableBalance});
 
   @override
@@ -10,25 +10,22 @@ class WithdrawBottomWidget extends StatefulWidget {
 }
 
 class _WithdrawBottomWidgetState extends State<WithdrawBottomWidget> {
-  final TextEditingController _amountController = TextEditingController(); // Controller for the amount text field
-  String? _errorMessage; // Variable to hold error message
-  String? _upiId; // Variable to hold the UPI ID
+  String? _upiId;
 
   @override
   void initState() {
     super.initState();
-    _fetchUpiId(); // Fetch the UPI ID when the widget is initialized
+    _fetchUpiId();
   }
 
   Future<void> _fetchUpiId() async {
-    // Fetch the UPI ID from the profiles table
-    _upiId = await SupabaseService.getUpiId(); // Assuming this method exists
-    setState(() {}); // Update the state to reflect the fetched UPI ID
+    _upiId = await SupabaseService.getUpiId();
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( // Make the bottom sheet scrollable
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -39,27 +36,37 @@ class _WithdrawBottomWidgetState extends State<WithdrawBottomWidget> {
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 20),
-            TextField(
-              controller: _amountController,
-              decoration: InputDecoration(
-                labelText: 'Enter amount',
-                border: const OutlineInputBorder(),
-                errorText: _errorMessage, // Show error message here
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey),
+                borderRadius: BorderRadius.circular(8),
               ),
-              keyboardType: TextInputType.number,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    '₹${widget.withdrawableBalance.toStringAsFixed(2)}',
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
             ),
-            if (_upiId != null) // Check if UPI ID is available
+            if (_upiId != null)
               Align(
-                alignment: Alignment.centerLeft, // Align to the left
+                alignment: Alignment.centerLeft,
                 child: Row(
                   children: [
-                    const Text('Paying to: '), // Keep "Pay to:" in default color
+                    const Text('Paying to: '),
                     Chip(
                       label: Text(
-                        _upiId!, // Display only the UPI ID
-                        style: const TextStyle(color: Colors.black), // Text color for UPI ID
+                        _upiId!,
+                        style: const TextStyle(color: Colors.black),
                       ),
-                      backgroundColor: Colors.yellow, // Yellow chip background
+                      backgroundColor: Colors.yellow,
                     ),
                   ],
                 ),
@@ -67,33 +74,13 @@ class _WithdrawBottomWidgetState extends State<WithdrawBottomWidget> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Implement the withdraw request functionality here
-                final amount = double.tryParse(_amountController.text);
-                setState(() {
-                  _errorMessage = null; // Reset error message
-                });
-                if (amount != null && amount > 0) {
-                  if (amount > widget.withdrawableBalance) {
-                    // Set error message if the amount exceeds the withdrawable balance
-                    setState(() {
-                      _errorMessage = 'Amount exceeds withdrawable balance';
-                    });
-                  } else {
-                    // Call the withdraw method from SupabaseService
-                    _withdrawAmount(amount);
-                    Navigator.of(context).pop(); // Close the bottom sheet
-                  }
-                } else {
-                  // Set error message if the amount is invalid
-                  setState(() {
-                    _errorMessage = 'Please enter a valid amount';
-                  });
-                }
+                _withdrawAmount(widget.withdrawableBalance);
+                Navigator.of(context).pop();
               },
-              child: const Text('Send Request'),
               style: ElevatedButton.styleFrom(
                 minimumSize: const Size(double.infinity, 50),
               ),
+              child: const Text('Send Request'),
             ),
           ],
         ),
@@ -103,11 +90,10 @@ class _WithdrawBottomWidgetState extends State<WithdrawBottomWidget> {
 
   Future<void> _withdrawAmount(double amount) async {
     try {
-      // Insert the withdrawal request into the withdraw table
       await SupabaseService.insertWithdrawRequest(amount: amount, success: false);
-      debugPrint('Withdraw request for amount: ₹$amount has been submitted.');
+      await SupabaseService.updateJoiningBonus();
     } catch (e) {
-      debugPrint('Error submitting withdraw request: $e');
+      // Handle error silently
     }
   }
 } 

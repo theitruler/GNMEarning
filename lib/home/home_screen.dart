@@ -13,6 +13,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 import 'package:url_launcher/url_launcher.dart'; // Import url_launcher
 import 'bannsheet.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart'; // Import dotenv
+import '../rewards/reward.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -405,6 +406,73 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                             ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const RewardScreen(),
+                          ),
+                        );
+                      },
+                      child: Card(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15),
+                        ),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(15),
+                            gradient: const LinearGradient(
+                              begin: Alignment.topLeft,
+                              end: Alignment.bottomRight,
+                              colors: [secondaryColor, primaryColor],
+                            ),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(20.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                const Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      "Rewards",
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: textLight,
+                                      ),
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      "Check your rewards",
+                                      style: TextStyle(
+                                        color: textLight,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: accentColor.withOpacity(0.3),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.card_giftcard,
+                                    size: 40,
+                                    color: textLight,
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),

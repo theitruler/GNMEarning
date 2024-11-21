@@ -246,7 +246,7 @@ class SupabaseService {
       final user = Supabase.instance.client.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
-      // Fetching all prices from the images table
+      // Fetching all approved images
       final responseImages = await Supabase.instance.client
           .from('images')
           .select('price')
@@ -254,6 +254,7 @@ class SupabaseService {
           .eq('status', 'approved');
 
       final List<dynamic> dataImages = responseImages;
+      final int approvedImageCount = dataImages.length; // Count of approved images
 
       // Calculate total image prices
       double totalImagePrices = 0.0;
@@ -294,10 +295,15 @@ class SupabaseService {
         }
       }
 
+      // Check joining bonus status
+      final bool? hasJoiningBonus = await getJoiningBonus();
+      
       // Calculate withdrawable balance
       double withdrawableBalance = totalImagePrices - totalWithdrawAmounts;
+      
+      // No joining bonus added to withdrawable balance
 
-      return withdrawableBalance; // Return the calculated balance
+      return withdrawableBalance;
     } catch (e) {
       return 0.0; // Return 0.0 in case of an error
     }
@@ -412,6 +418,38 @@ class SupabaseService {
       return List<Map<String, dynamic>>.from(response);
     } catch (e) {
       return [];
+    }
+  }
+
+  static Future<bool?> getJoiningBonus() async {
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) throw Exception('User not authenticated');
+
+      final response = await supabase
+          .from('profiles')
+          .select('joiningbonus')
+          .eq('id', user.id)
+          .single();
+      
+      return response['joiningbonus'] as bool?; // Return the boolean value directly
+      
+    } catch (e) {
+      return null; // Return null in case of an error
+    }
+  }
+
+  static Future<void> updateJoiningBonus() async {
+    try {
+      final user = supabase.auth.currentUser;
+      if (user == null) throw Exception('User not authenticated');
+
+      await supabase
+          .from('profiles')
+          .update({'joiningbonus': true})
+          .eq('id', user.id);
+    } catch (e) {
+      rethrow;
     }
   }
 }
