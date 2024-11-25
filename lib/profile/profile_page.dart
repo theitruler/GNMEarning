@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/colors.dart';
 import '../services/services.dart';
+import 'location_details.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -54,59 +55,74 @@ class _ProfilePageState extends State<ProfilePage> {
           : errorMessage != null
               ? Center(child: Text(errorMessage!))
               : Container(
-                  color: Colors.grey[200], // Background color
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      TextField(
-                        controller: TextEditingController(text: 'Name: ${profileData!['name'] ?? 'N/A'}'),
-                        readOnly: true, // Non-editable field
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Name',
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        TextField(
+                          controller: TextEditingController(text: 'Name: ${profileData!['name'] ?? 'N/A'}'),
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Name',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: TextEditingController(text: 'Zomato ID: ${profileData!['zomato_id'] ?? 'N/A'}'),
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Zomato ID',
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: TextEditingController(text: 'Zomato ID: ${profileData!['zomato_id'] ?? 'N/A'}'),
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Zomato ID',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: TextEditingController(text: 'UPI ID: ${profileData!['upi_id'] ?? 'N/A'}'),
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'UPI ID',
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: TextEditingController(text: 'UPI ID: ${profileData!['upi_id'] ?? 'N/A'}'),
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'UPI ID',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: TextEditingController(text: 'Phone: ${profileData!['phone'] ?? 'N/A'}'),
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Phone',
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: TextEditingController(text: 'Phone: ${profileData!['phone'] ?? 'N/A'}'),
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Phone',
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 12),
-                      TextField(
-                        controller: TextEditingController(text: 'Email: ${email ?? 'N/A'}'),
-                        readOnly: true,
-                        decoration: const InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: 'Email',
+                        const SizedBox(height: 12),
+                        TextField(
+                          controller: TextEditingController(text: 'Email: ${email ?? 'N/A'}'),
+                          readOnly: true,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                            labelText: 'Email',
+                          ),
                         ),
-                      ),
-                      // Add more fields as necessary
-                    ],
+                      ],
+                    ),
                   ),
                 ),
+      bottomNavigationBar: SafeArea(
+        child: Container(
+          height: 60,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: ElevatedButton(
+            onPressed: LocationDetails.openGoogleMaps,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: primaryColor,
+              foregroundColor: Colors.white,
+              minimumSize: const Size.fromHeight(50),
+            ),
+            child: const Text('Get Poster Here'),
+          ),
+        ),
+      ),
     );
   }
-} 
+}

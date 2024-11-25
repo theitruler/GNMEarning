@@ -3,6 +3,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:geolocator/geolocator.dart';
 import 'dart:io';
 import 'package:path/path.dart' as path;
+import 'package:image/image.dart' as img;
+import 'package:path_provider/path_provider.dart';
 
 class SupabaseService {
   static final supabase = Supabase.instance.client;
@@ -83,13 +85,36 @@ class SupabaseService {
       final user = supabase.auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
 
+      // Compress the image
+      final bytes = await file.readAsBytes();
+      final image = img.decodeImage(bytes);
+      if (image == null) throw Exception('Failed to decode image');
+      
+      // Resize the image if it's too large (max dimension 1024)
+      var resized = image;
+      if (image.width > 1024 || image.height > 1024) {
+        resized = img.copyResize(
+          image,
+          width: image.width > image.height ? 1024 : null,
+          height: image.height >= image.width ? 1024 : null,
+        );
+      }
+      
+      // Compress the image with reduced quality
+      final compressed = img.encodeJpg(resized, quality: 85);
+      
+      // Create a temporary file with the compressed image
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/compressed_${path.basename(file.path)}');
+      await tempFile.writeAsBytes(compressed);
+
       final fileName = '${DateTime.now().millisecondsSinceEpoch}${path.extension(file.path)}';
       final filePath = '${user.id}/$fileName';
 
       await supabase
           .storage
           .from(bucket)
-          .upload(filePath, file);
+          .upload(filePath, tempFile);
       
       final String fileUrl = supabase
           .storage
@@ -105,6 +130,9 @@ class SupabaseService {
         'created_at': DateTime.now().toIso8601String(),
         'status': 'pending',
       });
+      
+      // Clean up the temporary file
+      await tempFile.delete();
           
       return fileUrl;
     } catch (e) {
@@ -457,4 +485,4 @@ class SupabaseService {
 // Extension to get start of day
 extension DateTimeExtension on DateTime {
   DateTime get startOfDay => DateTime.utc(year, month, day, 0, 0, 0, 0, 0);
-} 
+}
